@@ -3,6 +3,7 @@ package yap.sslpinning
 import android.content.Context
 import android.util.Log
 import java.io.File
+import java.io.InputStream
 import javax.crypto.Cipher
 import javax.crypto.SecretKey
 import javax.crypto.spec.IvParameterSpec
@@ -25,22 +26,18 @@ object EncryptFile {
     }
 
 
-    fun encryptDownloadedFile(context: Context, encodedKey: String) {
+    fun encryptDownloadedFile(context: Context, encodedKey: String, file: File, byteArray: ByteArray) {
         try {
-            val cloudflareCertificates = "cloudflare_cer.cer"
-            val filesDirectory: String = context.filesDir.absolutePath
-            val filePath = filesDirectory + File.separator + cloudflareCertificates
-            val fileData = FileUtils.readFile(File(filePath))
+            //val fileData = FileUtils.readFile(file)
 
-            val keyStream = context.resources.openRawResource(R.raw.dynamic).readBytes()
 
             //get secret key
             val secretKey = EncryptionUtils.generateSecretKey(encodedKey)
 
             //encrypt file
-            val encodedData = encrypt(secretKey, fileData)
+            val encodedData = encrypt(secretKey, byteArray)
 
-            FileUtils.saveFile(encodedData, File(filePath))
+            FileUtils.saveFile(encodedData, file)
 
         } catch (e: Exception) {
             Log.d("mTag", "${e.message}")

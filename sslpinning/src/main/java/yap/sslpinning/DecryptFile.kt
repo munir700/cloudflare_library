@@ -7,10 +7,10 @@ import javax.crypto.spec.IvParameterSpec
 object DecryptFile {
 
     @Throws(Exception::class)
-    private fun decrypt(yourKey: SecretKey, fileData: ByteArray): ByteArray {
+    private fun decrypt(secretKey: SecretKey, fileData: ByteArray): ByteArray {
         val decrypted: ByteArray
         val cipher = Cipher.getInstance("AES", "BC")
-        cipher.init(Cipher.DECRYPT_MODE, yourKey, IvParameterSpec(ByteArray(cipher.blockSize)))
+        cipher.init(Cipher.DECRYPT_MODE, secretKey, IvParameterSpec(ByteArray(cipher.blockSize)))
         decrypted = cipher.doFinal(fileData)
         return decrypted
     }
