@@ -12,8 +12,8 @@ object EncryptFile {
 
 
     @Throws(Exception::class)
-    private fun encrypt(yourKey: SecretKey, fileData: ByteArray): ByteArray {
-        val data = yourKey.encoded
+    private fun encrypt(secretKey: SecretKey, fileData: ByteArray): ByteArray {
+        val data = secretKey.encoded
         val secretKeySpec = SecretKeySpec(data, 0, data.size, "AES")
         val cipher = Cipher.getInstance("AES", "BC")
         cipher.init(
