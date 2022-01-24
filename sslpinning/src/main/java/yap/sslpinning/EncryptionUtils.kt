@@ -1,7 +1,6 @@
 package yap.sslpinning
 
 import android.util.Base64
-import java.io.*
 import javax.crypto.SecretKey
 import javax.crypto.spec.SecretKeySpec
 

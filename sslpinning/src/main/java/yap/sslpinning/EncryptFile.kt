@@ -3,7 +3,6 @@ package yap.sslpinning
 import android.content.Context
 import android.util.Log
 import java.io.File
-import java.io.InputStream
 import javax.crypto.Cipher
 import javax.crypto.SecretKey
 import javax.crypto.spec.IvParameterSpec
