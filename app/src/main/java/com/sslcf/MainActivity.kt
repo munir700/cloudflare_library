@@ -38,7 +38,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun getSecureKeyFirebase() {
         lifecycleScope.launch(Dispatchers.IO) {
-            DataStoreManager(this@MainActivity).getSecureEncodedKey().catch { e ->
+            DataStoreManager().getSecureEncodedKey(this@MainActivity).catch { e ->
                 e.printStackTrace()
             }.collect {
                 if (it.isNullOrEmpty())
@@ -119,7 +119,7 @@ class MainActivity : AppCompatActivity() {
                     val value = dataSnapshot.getValue<HashMap<String, String>>()
                     Log.d(TAG, "Value is: $value")
                     value?.get("secure_encoded_key").let {
-                        DataStoreManager(this@MainActivity).saveSecureEncodedKey(it!!)
+                        DataStoreManager().saveSecureEncodedKey(this@MainActivity, it!!)
                         buildHttpClient(it)
                     }
                 }
