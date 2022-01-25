@@ -11,7 +11,10 @@ import com.google.firebase.database.ktx.database
 import com.google.firebase.database.ktx.getValue
 import com.google.firebase.ktx.Firebase
 import com.sslcf.api.ApiService
+import datastore.DataStoreManager
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import okhttp3.OkHttpClient
 import okhttp3.ResponseBody
@@ -29,10 +32,20 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        firebaseDatabase()
-        //encryptFile()
+        getSecureKeyFirebase()
+
+    }
+
+    private fun getSecureKeyFirebase() {
         lifecycleScope.launch(Dispatchers.IO) {
-            buildHttpClient()
+            DataStoreManager(this@MainActivity).getSecureEncodedKey().catch { e ->
+                e.printStackTrace()
+            }.collect {
+                if (it.isNullOrEmpty())
+                    firebaseDatabase()
+                else
+                    buildHttpClient(it)
+            }
         }
     }
 
@@ -53,8 +66,8 @@ class MainActivity : AppCompatActivity() {
         return okHttpClientBuilder
     }
 
-    private fun buildHttpClient() {
-        val okHttpClientBuilder = getHttpBuilder("")
+    private fun buildHttpClient(secureEncodedKey: String) {
+        val okHttpClientBuilder = getHttpBuilder(secureEncodedKey)
         val retrofit = Retrofit.Builder()
             .baseUrl("https://test-mtls.yap.com/")
             .client(okHttpClientBuilder.build())
@@ -88,7 +101,11 @@ class MainActivity : AppCompatActivity() {
         //val fileData = FileUtils.readFile(File(filePath))
 
         val keyStream = resources.openRawResource(R.raw.dynamic).readBytes()
-        EncryptFile.encryptFileAndSaveMemory(EncryptionUtils.generateSecretKey(secureEncodedKey), file, keyStream)
+        EncryptFile.encryptFileAndSaveMemory(
+            EncryptionUtils.generateSecretKey(secureEncodedKey),
+            file,
+            keyStream
+        )
     }
 
     private fun firebaseDatabase() {
@@ -98,9 +115,14 @@ class MainActivity : AppCompatActivity() {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
                 // This method is called once with the initial value and again
                 // whenever data at this location is updated.
-                val value = dataSnapshot.getValue<HashMap<String, String>>()
-                Log.d(TAG, "Value is: $value")
-
+                lifecycleScope.launch(Dispatchers.IO) {
+                    val value = dataSnapshot.getValue<HashMap<String, String>>()
+                    Log.d(TAG, "Value is: $value")
+                    value?.get("secure_encoded_key").let {
+                        DataStoreManager(this@MainActivity).saveSecureEncodedKey(it!!)
+                        buildHttpClient(it)
+                    }
+                }
             }
 
             override fun onCancelled(error: DatabaseError) {
