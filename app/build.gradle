@@ -1,6 +1,7 @@
 plugins {
     id 'com.android.application'
     id 'kotlin-android'
+    id 'com.google.gms.google-services'
 }
 
 android {
@@ -48,5 +49,14 @@ dependencies {
     implementation 'com.squareup.retrofit2:retrofit:2.9.0'
 
     implementation project(':sslpinning')
+
+    implementation platform('com.google.firebase:firebase-bom:29.0.3')
+    implementation 'com.google.firebase:firebase-database-ktx'
+
+//    // Typed DataStore (Typed API surface, such as Proto)
+//    implementation "androidx.datastore:datastore:1.0.0"
+
+    implementation("androidx.datastore:datastore-preferences:1.0.0")
+    implementation "androidx.datastore:datastore-preferences-core:1.0.0"
 
 }
