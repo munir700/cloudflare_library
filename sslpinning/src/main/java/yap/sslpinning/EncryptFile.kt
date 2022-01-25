@@ -1,6 +1,5 @@
 package yap.sslpinning
 
-import android.content.Context
 import android.util.Log
 import java.io.File
 import javax.crypto.Cipher
@@ -10,7 +9,10 @@ import javax.crypto.spec.SecretKeySpec
 
 object EncryptFile {
 
-
+    /**
+     * Encrypt file by using Cipher
+     * Cipher provide functionality of a cryptographic encryption
+     */
     @Throws(Exception::class)
     private fun encrypt(secretKey: SecretKey, fileData: ByteArray): ByteArray {
         val data = secretKey.encoded
@@ -25,17 +27,16 @@ object EncryptFile {
     }
 
 
-    fun encryptDownloadedFile(context: Context, encodedKey: String, file: File, byteArray: ByteArray) {
+    /**
+     * Use encrypt method to encrypt file providing secret key and byte array
+     */
+    fun encryptFileAndSaveMemory(secretKey: SecretKey, file: File, byteArray: ByteArray) {
         try {
-            //val fileData = FileUtils.readFile(file)
-
-
-            //get secret key
-            val secretKey = EncryptionUtils.generateSecretKey(encodedKey)
 
             //encrypt file
             val encodedData = encrypt(secretKey, byteArray)
 
+            //Save Encrypted file in app cache
             FileUtils.saveFile(encodedData, file)
 
         } catch (e: Exception) {
