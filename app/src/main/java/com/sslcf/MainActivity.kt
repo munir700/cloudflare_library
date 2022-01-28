@@ -1,8 +1,9 @@
 package com.sslcf
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Base64
 import android.util.Log
+import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
@@ -18,11 +19,15 @@ import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import okhttp3.OkHttpClient
 import okhttp3.ResponseBody
+import org.json.JSONObject
 import retrofit2.Call
 import retrofit2.Retrofit
 import yap.sslpinning.*
+import yap.utils.decryptFileData
+import yap.utils.encryptFileData
 import java.io.File
 import javax.net.ssl.HttpsURLConnection
+
 
 class MainActivity : AppCompatActivity() {
     private val TAG: String = "MainActivity"
@@ -32,31 +37,44 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        getSecureKeyFirebase()
+
+        encryptionAsymmetric()
+
+
+        //getSecureKeyFirebase()
 
     }
 
-    private fun getSecureKeyFirebase() {
-        lifecycleScope.launch(Dispatchers.IO) {
-            DataStoreManager().getSecureEncodedKey(this@MainActivity).catch { e ->
-                e.printStackTrace()
-            }.collect {
-                if (it.isNullOrEmpty())
-                    firebaseDatabase()
-                else
-                    buildHttpClient(it)
+    private fun encryptionAsymmetric() {
+        val inputFileByteArray = resources.openRawResource(R.raw.dynamic).readBytes()
+        val isCertificate = resources.openRawResource(R.raw.ca_cert)
+        this.encryptFileData(inputFileByteArray, isCertificate) {
+            Log.i("Encryption", "SUCCESS $it")
+            decryptAsymmetric(it)
+        }
+    }
+
+    private fun decryptAsymmetric(encryptedFileData: String) {
+
+        val isCertificate = resources.openRawResource(R.raw.ca_cert)
+        val privateKey =
+            yap.utils.EncryptionUtils.loadDecryptionKey(resources.openRawResource(R.raw.private_unencrypted))
+        this.decryptFileData(encryptedFileData, isCertificate, privateKey) { output ->
+            lifecycleScope.launch(Dispatchers.IO) {
+
+                val jsonObject = JSONObject(output)
+                val jsonStr: String = jsonObject.getString("DecryptedData")
+                buildHttpClient(secureEncodedKey, Base64.decode(jsonStr, Base64.NO_WRAP))
             }
         }
     }
 
 
-    private fun getHttpBuilder(secureEncodedKey: String): OkHttpClient.Builder {
+    private fun getHttpBuilder(
+        secureEncodedKey: String,
+        decryptedFile: ByteArray
+    ): OkHttpClient.Builder {
         val okHttpClientBuilder = OkHttpClient.Builder()
-        val keyStream = resources.openRawResource(R.raw.cloudflare_cer).readBytes()
-        val decryptedFile = DecryptFile.decryptEncryptedFile(
-            EncryptionUtils.generateSecretKey(secureEncodedKey),
-            keyStream
-        )
         CerOkHttpClient.setupOkHttpClientBuilderSSLSocket(
             okHttpClientBuilder,
             decryptedFile,
@@ -66,8 +84,8 @@ class MainActivity : AppCompatActivity() {
         return okHttpClientBuilder
     }
 
-    private fun buildHttpClient(secureEncodedKey: String) {
-        val okHttpClientBuilder = getHttpBuilder(secureEncodedKey)
+    private fun buildHttpClient(secureEncodedKey: String, decryptedFile: ByteArray) {
+        val okHttpClientBuilder = getHttpBuilder(secureEncodedKey, decryptedFile)
         val retrofit = Retrofit.Builder()
             .baseUrl("https://test-mtls.yap.com/")
             .client(okHttpClientBuilder.build())
@@ -92,6 +110,18 @@ class MainActivity : AppCompatActivity() {
 
     }
 
+    private fun getSecureKeyFirebase() {
+        lifecycleScope.launch(Dispatchers.IO) {
+            DataStoreManager().getSecureEncodedKey(this@MainActivity).catch { e ->
+                e.printStackTrace()
+            }.collect {
+                /*if (it.isNullOrEmpty())
+                    firebaseDatabase()
+                else
+                    buildHttpClient(it, "")*/
+            }
+        }
+    }
 
     private fun encryptFile() {
         val cloudflareCertificates = "cloudflare_cer.cer"
@@ -120,7 +150,7 @@ class MainActivity : AppCompatActivity() {
                     Log.d(TAG, "Value is: $value")
                     value?.get("secure_encoded_key").let {
                         DataStoreManager().saveSecureEncodedKey(this@MainActivity, it!!)
-                        buildHttpClient(it)
+                        //buildHttpClient(it, "")
                     }
                 }
             }
