@@ -3,6 +3,7 @@ package datastore
 import android.content.Context
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
@@ -11,20 +12,62 @@ import kotlinx.coroutines.flow.map
 class DataStoreManager() {
 
     companion object {
+        const val PASS_WORD_KEY = "pass_word_key"
+        const val RSA_ENCRYPTED_DATA = "rsa_encrypted_data"
+        const val RSA_PRIVATE_KEY = "rsa_private_key"
+        const val FORCE_FETCH_FIREBASE = "force_fetch_firebase"
+
+
         private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "EncodedData")
-        val SECURE_ENCODED_KEY = stringPreferencesKey("secure_encoded_key")
+
+        val SECURE_PASSWORD_PRE = stringPreferencesKey(PASS_WORD_KEY)
+        val RSA_ENCRYPTED_PRE = stringPreferencesKey(RSA_ENCRYPTED_DATA)
+        val RSA_PRIVATE_PRE = stringPreferencesKey(RSA_PRIVATE_KEY)
+        val FORCE_FETCH_PRE = booleanPreferencesKey(FORCE_FETCH_FIREBASE)
     }
 
 
-    suspend fun saveSecureEncodedKey(context: Context,secureEncodedKey: String) {
+    suspend fun saveForceFirebaseFetch(
+        context: Context,
+        forceFirebaseFetch: Boolean
+    ) {
         context.dataStore.edit { preferences ->
-            preferences[SECURE_ENCODED_KEY] = secureEncodedKey
+            preferences[FORCE_FETCH_PRE] = forceFirebaseFetch
         }
     }
 
-    fun getSecureEncodedKey(context: Context) = context.dataStore.data
+    fun getForceFirebaseFetch(context: Context) = context.dataStore.data
         .map { preferences ->
-            preferences[SECURE_ENCODED_KEY]
+            preferences[FORCE_FETCH_PRE]
+        }
+
+
+    suspend fun saveSecureEncodedInfo(
+        context: Context,
+        passwordKey: String?,
+        rsaEncryptedData: String?,
+        rsaPrivateKey: String?
+    ) {
+        context.dataStore.edit { preferences ->
+            preferences[SECURE_PASSWORD_PRE] = passwordKey ?: ""
+            preferences[RSA_ENCRYPTED_PRE] = rsaEncryptedData ?: ""
+            preferences[RSA_PRIVATE_PRE] = rsaPrivateKey ?: ""
+        }
+    }
+
+    fun getDatsStoreInfo(context: Context) = context.dataStore.data
+        .map { preferences ->
+            DataStore(
+                preferences[SECURE_PASSWORD_PRE],
+                preferences[RSA_ENCRYPTED_PRE],
+                preferences[RSA_PRIVATE_PRE]
+            )
         }
 }
+
+class DataStore(
+    val passwordKey: String?,
+    val rsaEncryptedData: String?,
+    val rsaPrivateKey: String?
+)
 

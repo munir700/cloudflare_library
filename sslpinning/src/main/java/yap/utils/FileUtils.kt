@@ -1,5 +1,6 @@
-package yap.sslpinning
+package yap.utils
 
+import android.content.Context
 import java.io.*
 
 object FileUtils {
@@ -24,5 +25,12 @@ object FileUtils {
         bos.write(fileData)
         bos.flush()
         bos.close()
+    }
+
+    fun Context.createFilePath(): File {
+        val cloudflareCertificates = "cloudflare_cer.cer"
+        val filesDirectory: String = this.filesDir.absolutePath
+        val filePath = filesDirectory + File.separator + cloudflareCertificates
+        return File(filePath)
     }
 }
