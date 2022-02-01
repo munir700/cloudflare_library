@@ -3,6 +3,7 @@ package com.sslcf
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
+import com.sslcf.sslpinning.DataEncryption
 import com.sslcf.sslpinning.FirebaseOperation
 import datastore.DataStoreManager
 import kotlinx.coroutines.Dispatchers
@@ -23,9 +24,9 @@ class MainActivity : AppCompatActivity() {
             DataStoreManager().saveForceFirebaseFetch(this@MainActivity, false)
         }
 
-        //DataEncryption().encryptionAsymmetric(resources, passwordKey)
+        DataEncryption().encryptionAsymmetric(lifecycleScope, resources, passwordKey)
 
-        FirebaseOperation().getEncryptedData(lifecycleScope, this)
+        //FirebaseOperation().getEncryptedData(lifecycleScope, this)
 
     }
 

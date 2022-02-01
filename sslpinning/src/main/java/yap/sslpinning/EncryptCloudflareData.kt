@@ -8,6 +8,17 @@ import java.io.IOException
 import java.io.InputStream
 import java.security.GeneralSecurityException
 
+const val DATA = "data"
+const val CLOUDFLARE_DECRYPTED = "cfDecrypted"
+const val SHA_256 = "SHA-256"
+const val PUBLIC_KEY_FINGER_PRINT = "publicKeyFingerprint"
+const val ENCRYPTED_DATA = "encryptedData"
+const val ENCRYPTED_KEY = "encryptedKey"
+const val IV = "iv"
+const val OAEP_HASHING_ALGORITHM = "oaepHashingAlgorithm"
+const val TOKENIZATION_AUTHENTICATE_VALUE = "tokenizationAuthenticationValue"
+
+
 object EncryptCloudflareData {
 
     fun encryptFileData(
@@ -17,20 +28,20 @@ object EncryptCloudflareData {
     ) {
         try {
             val fileData =
-                "{\"cloudflareData\": \"${Base64.encodeToString(fileData, Base64.NO_WRAP)}\"}"
+                "{\"$DATA\": \"${Base64.encodeToString(fileData, Base64.NO_WRAP)}\"}"
             val encryptionCertificate =
                 EncryptionUtils.loadEncryptionCertificate(certificateStream)
             val config =
                 FieldLevelEncryptionConfigBuilder.aFieldLevelEncryptionConfig()
                     .withEncryptionCertificate(encryptionCertificate)
-                    .withEncryptionPath("$.cloudflareData", "$.cloudflareEncryptedData")
-                    .withOaepPaddingDigestAlgorithm("SHA-256")
-                    .withEncryptionCertificateFingerprintFieldName("publicKeyFingerprint")
-                    .withEncryptedValueFieldName("encryptedData")
-                    .withEncryptedKeyFieldName("encryptedKey")
-                    .withIvFieldName("iv")
-                    .withOaepPaddingDigestAlgorithmFieldName("oaepHashingAlgorithm")
-                    .withTokenizationAuthenticationValueFieldName("tokenizationAuthenticationValue")
+                    .withEncryptionPath("$.$DATA", "$.$DATA")
+                    .withOaepPaddingDigestAlgorithm(SHA_256)
+                    .withEncryptionCertificateFingerprintFieldName(PUBLIC_KEY_FINGER_PRINT)
+                    .withEncryptedValueFieldName(ENCRYPTED_DATA)
+                    .withEncryptedKeyFieldName(ENCRYPTED_KEY)
+                    .withIvFieldName(IV)
+                    .withOaepPaddingDigestAlgorithmFieldName(OAEP_HASHING_ALGORITHM)
+                    .withTokenizationAuthenticationValueFieldName(TOKENIZATION_AUTHENTICATE_VALUE)
                     .withFieldValueEncoding(FieldLevelEncryptionConfig.FieldValueEncoding.HEX)
                     .build()
             FieldLevelEncryption.withJsonEngine(GsonJsonEngine())
