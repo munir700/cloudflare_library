@@ -11,14 +11,14 @@ object CerOkHttpClient {
     fun setupOkHttpClientBuilderSSLSocket(
         builder: OkHttpClient.Builder,
         decryptedFile: ByteArray,
-        secretPassword: String
+        passwordKey: String
     ) {
 
         try {
 
             // Set up KeyStore
             val keyStore = KeyStore.getInstance("PKCS12")
-            keyStore.load(decryptedFile.inputStream(), secretPassword.toCharArray())
+            keyStore.load(decryptedFile.inputStream(), passwordKey.toCharArray())
 
 
             // Set up Trust Managers

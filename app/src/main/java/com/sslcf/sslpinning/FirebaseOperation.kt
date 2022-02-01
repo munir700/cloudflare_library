@@ -1,4 +1,4 @@
-package com.sslcf
+package com.sslcf.sslpinning
 
 import android.content.Context
 import android.util.Log

@@ -1,4 +1,4 @@
-package com.sslcf
+package com.sslcf.sslpinning
 
 import android.util.Base64
 import kotlinx.coroutines.CoroutineScope

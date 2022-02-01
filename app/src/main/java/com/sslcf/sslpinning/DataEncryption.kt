@@ -1,9 +1,10 @@
-package com.sslcf
+package com.sslcf.sslpinning
 
 import android.content.res.Resources
 import android.util.Log
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
+import com.sslcf.R
 import datastore.DataStoreManager
 import org.json.JSONObject
 import yap.sslpinning.EncryptCloudflareData

@@ -1,4 +1,4 @@
-package com.sslcf
+package com.sslcf.sslpinning
 
 import android.util.Log
 import com.sslcf.api.ApiService
@@ -12,14 +12,14 @@ import javax.net.ssl.HttpsURLConnection
 class YapHttpsBuilder {
 
     private fun getHttpBuilder(
-        secureEncodedKey: String,
+        passwordKey: String,
         decryptedFile: ByteArray
     ): OkHttpClient.Builder {
         val okHttpClientBuilder = OkHttpClient.Builder()
         CerOkHttpClient.setupOkHttpClientBuilderSSLSocket(
             okHttpClientBuilder,
             decryptedFile,
-            secureEncodedKey
+            passwordKey
         )
 
         return okHttpClientBuilder
