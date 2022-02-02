@@ -6,7 +6,6 @@ import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
 import com.sslcf.R
 import datastore.DataStoreManager
-import kotlinx.coroutines.CoroutineScope
 import org.json.JSONObject
 import yap.sslpinning.DATA
 import yap.sslpinning.ENCRYPTED_DATA
@@ -14,7 +13,6 @@ import yap.sslpinning.EncryptCloudflareData
 
 class DataEncryption {
     fun encryptionAsymmetric(
-        coroutineScope: CoroutineScope,
         resources: Resources,
         passwordKey: String
     ) {
@@ -22,26 +20,18 @@ class DataEncryption {
         val isCertificate = resources.openRawResource(R.raw.ca_cert)
         EncryptCloudflareData.encryptFileData(inputFileByteArray, isCertificate) { encryptedData ->
             Log.i("Encryption", "SUCCESS $encryptedData")
-            val jsonEncryptedData = JSONObject(encryptedData)
-            //val temp = jsonEncryptedData.getJSONObject(DATA).getString(ENCRYPTED_DATA)
-            jsonEncryptedData.getJSONObject(DATA).apply {
-                this.remove(ENCRYPTED_DATA)
+            var jsonEncryptedData: JSONObject? = null
+            try {
+                jsonEncryptedData = JSONObject(encryptedData).getJSONObject(DATA).apply {
+                    this.remove(ENCRYPTED_DATA)
+                }
+            } catch (e: Exception) {
             }
             setFirebaseDatabase(
                 passwordKey,
                 jsonEncryptedData.toString(),
                 resources.openRawResource(R.raw.private_key).bufferedReader().use { it.readText() },
             )
-
-            /* jsonEncryptedData.getJSONObject(DATA).apply {
-                 this.put(ENCRYPTED_DATA, temp)
-             }
-
-             FirebaseOperation().test(
-                 coroutineScope,
-                 resources.openRawResource(R.raw.private_key).buffered(),
-                 jsonEncryptedData.toString()
-             )*/
         }
     }
 

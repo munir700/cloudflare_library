@@ -9,7 +9,9 @@ import java.io.InputStream
 import java.security.GeneralSecurityException
 
 const val DATA = "data"
-const val CLOUDFLARE_DECRYPTED = "cfDecrypted"
+const val DOLLAR_DATA = "$.data"
+const val DOLLAR_DECRYPTED = "$.decrypted"
+const val CLOUDFLARE_DECRYPTED = "decrypted"
 const val SHA_256 = "SHA-256"
 const val PUBLIC_KEY_FINGER_PRINT = "publicKeyFingerprint"
 const val ENCRYPTED_DATA = "encryptedData"
@@ -22,19 +24,19 @@ const val TOKENIZATION_AUTHENTICATE_VALUE = "tokenizationAuthenticationValue"
 object EncryptCloudflareData {
 
     fun encryptFileData(
-        fileData: ByteArray,
+        fileByteArray: ByteArray,
         certificateStream: InputStream,
         payload: (String) -> Unit
     ) {
         try {
             val fileData =
-                "{\"$DATA\": \"${Base64.encodeToString(fileData, Base64.NO_WRAP)}\"}"
+                "{\"$DATA\": \"${Base64.encodeToString(fileByteArray, Base64.NO_WRAP)}\"}"
             val encryptionCertificate =
                 EncryptionUtils.loadEncryptionCertificate(certificateStream)
             val config =
                 FieldLevelEncryptionConfigBuilder.aFieldLevelEncryptionConfig()
                     .withEncryptionCertificate(encryptionCertificate)
-                    .withEncryptionPath("$.$DATA", "$.$DATA")
+                    .withEncryptionPath(DOLLAR_DATA, DOLLAR_DATA)
                     .withOaepPaddingDigestAlgorithm(SHA_256)
                     .withEncryptionCertificateFingerprintFieldName(PUBLIC_KEY_FINGER_PRINT)
                     .withEncryptedValueFieldName(ENCRYPTED_DATA)

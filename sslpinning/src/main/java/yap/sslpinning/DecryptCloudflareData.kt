@@ -9,7 +9,7 @@ import java.security.PrivateKey
 object DecryptCloudflareData {
 
     fun decryptFileData(
-        fileData: String,
+        fileDecryptedData: String,
         privateKey: PrivateKey,
         payload: (String) -> Unit
     ) {
@@ -18,7 +18,7 @@ object DecryptCloudflareData {
             val config =
                 FieldLevelEncryptionConfigBuilder.aFieldLevelEncryptionConfig()
                     .withDecryptionKey(privateKey)
-                    .withDecryptionPath("$.$DATA", "$.$CLOUDFLARE_DECRYPTED")
+                    .withDecryptionPath(DOLLAR_DATA, DOLLAR_DECRYPTED)
                     .withOaepPaddingDigestAlgorithm(SHA_256)
                     .withEncryptionCertificateFingerprintFieldName(PUBLIC_KEY_FINGER_PRINT)
                     .withEncryptedValueFieldName(ENCRYPTED_DATA)
@@ -31,7 +31,7 @@ object DecryptCloudflareData {
             FieldLevelEncryption.withJsonEngine(GsonJsonEngine())
 
             val finalPayload = FieldLevelEncryption.decryptPayload(
-                fileData, config
+                fileDecryptedData, config
             )
             //println("SamsungTestPayload Json>>$finalPayload")
             payload.invoke(finalPayload)

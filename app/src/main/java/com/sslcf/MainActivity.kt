@@ -4,7 +4,7 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import com.sslcf.sslpinning.DataEncryption
-import com.sslcf.sslpinning.FirebaseOperation
+import com.sslcf.sslpinning.DataOperation
 import datastore.DataStoreManager
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -20,13 +20,13 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        lifecycleScope.launch(Dispatchers.IO) {
-            DataStoreManager().saveForceFirebaseFetch(this@MainActivity, false)
-        }
+         lifecycleScope.launch(Dispatchers.IO) {
+             DataStoreManager().saveForceFirebaseFetch(this@MainActivity, false)
+         }
 
-        DataEncryption().encryptionAsymmetric(lifecycleScope, resources, passwordKey)
+        //DataEncryption().encryptionAsymmetric(resources, passwordKey)
 
-        //FirebaseOperation().getEncryptedData(lifecycleScope, this)
+        DataOperation().getEncryptedData(lifecycleScope, this)
 
     }
 
