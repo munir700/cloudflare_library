@@ -1,4 +1,4 @@
-package yap.sslpinning
+package yap.sslpinninglibrary
 
 import android.util.Base64
 import encryption.*
@@ -20,19 +20,33 @@ const val IV = "iv"
 const val OAEP_HASHING_ALGORITHM = "oaepHashingAlgorithm"
 const val TOKENIZATION_AUTHENTICATE_VALUE = "tokenizationAuthenticationValue"
 
+/***
+ * Wrapper class on Encryption
+ * The basic purpose to interact with Encryption process by taking inputs from client and perform required
+ * operation according to need and return Encrypted data.
+ * @author Munir Ahmad
+ */
 
 object EncryptCloudflareData {
-
+    /***
+     * Encrypt Data/File
+     * @param fileByteArray
+     * @param certificateInputStream
+     * @param success lambda
+     * @param failure lambda
+     *
+     */
     fun encryptFileData(
         fileByteArray: ByteArray,
-        certificateStream: InputStream,
-        payload: (String) -> Unit
+        certificateInputStream: InputStream,
+        success: (String) -> Unit,
+        failure: (String) -> Unit
     ) {
         try {
             val fileData =
                 "{\"$DATA\": \"${Base64.encodeToString(fileByteArray, Base64.NO_WRAP)}\"}"
             val encryptionCertificate =
-                EncryptionUtils.loadEncryptionCertificate(certificateStream)
+                EncryptionUtils.loadEncryptionCertificate(certificateInputStream)
             val config =
                 FieldLevelEncryptionConfigBuilder.aFieldLevelEncryptionConfig()
                     .withEncryptionCertificate(encryptionCertificate)
@@ -48,19 +62,22 @@ object EncryptCloudflareData {
                     .build()
             FieldLevelEncryption.withJsonEngine(GsonJsonEngine())
 
-            val finalPayload = FieldLevelEncryption.encryptPayload(
+            val finalEncryptedData = FieldLevelEncryption.encryptPayload(
                 fileData, config
             )
-            //println("SamsungTestPayload Json>>$finalPayload")
-            payload.invoke(finalPayload)
+            success.invoke(finalEncryptedData)
         } catch (e: IOException) {
             e.printStackTrace()
+            failure.invoke(e.stackTraceToString())
         } catch (e: GeneralSecurityException) {
             e.printStackTrace()
+            failure.invoke(e.stackTraceToString())
         } catch (e: EncryptionException) {
             e.printStackTrace()
+            failure.invoke(e.stackTraceToString())
         } catch (e: InvalidSignatureException) {
             e.printStackTrace()
+            failure.invoke(e.stackTraceToString())
         }
     }
 

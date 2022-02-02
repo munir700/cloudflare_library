@@ -1,4 +1,4 @@
-package yap.sslpinning
+package yap.sslpinninglibrary
 
 import encryption.*
 import json.GsonJsonEngine
@@ -11,7 +11,8 @@ object DecryptCloudflareData {
     fun decryptFileData(
         fileDecryptedData: String,
         privateKey: PrivateKey,
-        payload: (String) -> Unit
+        success: (String) -> Unit,
+        failure: (String) -> Unit
     ) {
         try {
 
@@ -30,19 +31,22 @@ object DecryptCloudflareData {
                     .build()
             FieldLevelEncryption.withJsonEngine(GsonJsonEngine())
 
-            val finalPayload = FieldLevelEncryption.decryptPayload(
+            val finalDecryptedData = FieldLevelEncryption.decryptPayload(
                 fileDecryptedData, config
             )
-            //println("SamsungTestPayload Json>>$finalPayload")
-            payload.invoke(finalPayload)
+            success.invoke(finalDecryptedData)
         } catch (e: IOException) {
             e.printStackTrace()
+            failure.invoke(e.stackTraceToString())
         } catch (e: GeneralSecurityException) {
             e.printStackTrace()
+            failure.invoke(e.stackTraceToString())
         } catch (e: EncryptionException) {
             e.printStackTrace()
+            failure.invoke(e.stackTraceToString())
         } catch (e: InvalidSignatureException) {
             e.printStackTrace()
+            failure.invoke(e.stackTraceToString())
         }
     }
 }

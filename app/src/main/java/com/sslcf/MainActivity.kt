@@ -3,9 +3,8 @@ package com.sslcf
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
-import com.sslcf.sslpinning.DataEncryption
 import com.sslcf.sslpinning.DataOperation
-import datastore.DataStoreManager
+import datastorelibrary.DataStoreManager
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import yap.sslpinning.*

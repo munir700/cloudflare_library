@@ -1,4 +1,4 @@
-package datastore
+package datastorelibrary
 
 import android.content.Context
 import androidx.datastore.core.DataStore
@@ -36,7 +36,7 @@ class DataStoreManager() {
         }
     }
 
-    fun getForceFirebaseFetch(context: Context) = context.dataStore.data
+    fun getForceFetchFirebase(context: Context) = context.dataStore.data
         .map { preferences ->
             preferences[FORCE_FETCH_PRE]
         }
@@ -55,7 +55,7 @@ class DataStoreManager() {
         }
     }
 
-    fun getDataStoreInfo(context: Context) = context.dataStore.data
+    fun getDataStoreEncryptedInfo(context: Context) = context.dataStore.data
         .map { preferences ->
             DataStore(
                 preferences[SECURE_PASSWORD_PRE],

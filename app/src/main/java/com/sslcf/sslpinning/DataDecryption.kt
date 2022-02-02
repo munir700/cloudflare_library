@@ -7,32 +7,34 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.json.JSONException
 import org.json.JSONObject
-import yap.sslpinning.CLOUDFLARE_DECRYPTED
-import yap.sslpinning.DecryptCloudflareData
+import yap.sslpinninglibrary.CLOUDFLARE_DECRYPTED
+import yap.sslpinninglibrary.DecryptCloudflareData
 import java.security.PrivateKey
 
 class DataDecryption {
-     fun decryptAsymmetric(
+    fun decryptAsymmetric(
         coroutineScope: CoroutineScope,
         passwordKey: String,
         encryptedFile: String,
         privateKey: PrivateKey
     ) {
-
-        DecryptCloudflareData.decryptFileData(encryptedFile, privateKey) { output ->
+        DecryptCloudflareData.decryptFileData(encryptedFile, privateKey, { decryptedData ->
             coroutineScope.launch(Dispatchers.IO) {
 
                 try {
-                    val jsonObject = JSONObject(output)
-                    val jsonStr: String = jsonObject.getString(CLOUDFLARE_DECRYPTED)
+                    val jsonDecryptedData = JSONObject(decryptedData)
+                    val jsonDecryptedDataStr: String =
+                        jsonDecryptedData.getString(CLOUDFLARE_DECRYPTED)
                     YapHttpsBuilder().buildHttpClient(
                         passwordKey,
-                        Base64.decode(jsonStr, Base64.NO_WRAP)
+                        Base64.decode(jsonDecryptedDataStr, Base64.NO_WRAP)
                     )
                 } catch (e: JSONException) {
-                    Log.e("JSONException","ex ${e.message}")
+                    Log.e("JSONException", "ex ${e.message}")
                 }
             }
-        }
+        }, { failureMessage ->
+            Log.i("Decryption", "Failed $failureMessage")
+        })
     }
 }

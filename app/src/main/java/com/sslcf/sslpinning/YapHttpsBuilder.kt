@@ -6,7 +6,7 @@ import okhttp3.OkHttpClient
 import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.Retrofit
-import yap.sslpinning.CerOkHttpClient
+import yap.sslpinninglibrary.CerOkHttpClient
 import javax.net.ssl.HttpsURLConnection
 
 class YapHttpsBuilder {
@@ -25,8 +25,8 @@ class YapHttpsBuilder {
         return okHttpClientBuilder
     }
 
-     fun buildHttpClient(secureEncodedKey: String, decryptedFile: ByteArray) {
-        val okHttpClientBuilder = getHttpBuilder(secureEncodedKey, decryptedFile)
+    fun buildHttpClient(passwordKey: String, decryptedFile: ByteArray) {
+        val okHttpClientBuilder = getHttpBuilder(passwordKey, decryptedFile)
         val retrofit = Retrofit.Builder()
             .baseUrl("https://test-mtls.yap.com/")
             .client(okHttpClientBuilder.build())

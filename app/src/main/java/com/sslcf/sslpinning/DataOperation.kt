@@ -7,8 +7,8 @@ import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
-import datastore.DataStore
-import datastore.DataStoreManager
+import datastorelibrary.DataStore
+import datastorelibrary.DataStoreManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.catch
@@ -16,20 +16,21 @@ import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import org.json.JSONException
 import org.json.JSONObject
-import yap.sslpinning.*
+import yap.sslpinninglibrary.DATA
+import yap.sslpinninglibrary.ENCRYPTED_DATA
 import yap.utils.EncryptionUtils
 
 class DataOperation {
 
     fun getEncryptedData(coroutineScope: CoroutineScope, context: Context) {
         coroutineScope.launch(Dispatchers.Default) {
-            DataStoreManager().getForceFirebaseFetch(context).catch { e ->
+            DataStoreManager().getForceFetchFirebase(context).catch { e ->
                 e.printStackTrace()
             }.collect { isForceFirebaseFetch ->
                 if (isForceFirebaseFetch == true) {
                     getEncryptedDataFirebase(coroutineScope, context)
                 } else {
-                    DataStoreManager().getDataStoreInfo(context).catch { e ->
+                    DataStoreManager().getDataStoreEncryptedInfo(context).catch { e ->
                         e.printStackTrace()
                     }.collect { dataStore ->
                         if (dataStore.rsaEncryptedData.isNullOrEmpty())
@@ -57,6 +58,10 @@ class DataOperation {
             } catch (e: Exception) {
                 Log.e("Exception", "ex ${e.message}")
             }
+            /**
+             * TODO
+             * What will happen JSONObject throw exception?
+             */
 
             val privateKey =
                 EncryptionUtils.loadDecryptionKey(dataStore.rsaPrivateKey!!.byteInputStream())

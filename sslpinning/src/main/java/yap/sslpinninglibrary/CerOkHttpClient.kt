@@ -1,4 +1,4 @@
-package yap.sslpinning
+package yap.sslpinninglibrary
 
 import android.util.Log
 import okhttp3.OkHttpClient
