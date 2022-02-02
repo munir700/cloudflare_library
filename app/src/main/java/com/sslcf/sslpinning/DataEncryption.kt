@@ -22,10 +22,11 @@ class DataEncryption {
             Log.i("Encryption", "SUCCESS $encryptedData")
             var jsonEncryptedData: JSONObject? = null
             try {
-                jsonEncryptedData = JSONObject(encryptedData).getJSONObject(DATA).apply {
-                    this.remove(ENCRYPTED_DATA)
-                }
+                jsonEncryptedData = JSONObject(encryptedData)
+                jsonEncryptedData.getJSONObject(DATA).remove(ENCRYPTED_DATA)
+
             } catch (e: Exception) {
+                Log.i("Encryption", "Exception ${e.message}")
             }
             setFirebaseDatabase(
                 passwordKey,
@@ -41,6 +42,7 @@ class DataEncryption {
         rsaPrivateKey: String
     ) {
         Firebase.database.apply {
+            this.reference.removeValue()
             this.getReference(DataStoreManager.PASS_WORD_KEY).setValue(passwordKey)
             this.getReference(DataStoreManager.RSA_ENCRYPTED_DATA).setValue(rsaEncryptedData)
             this.getReference(DataStoreManager.RSA_PRIVATE_KEY).setValue(rsaPrivateKey)

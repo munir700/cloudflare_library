@@ -26,7 +26,7 @@ class MainActivity : AppCompatActivity() {
 
         //DataEncryption().encryptionAsymmetric(resources, passwordKey)
 
-        DataOperation().getEncryptedData(lifecycleScope, this)
+         DataOperation().getEncryptedData(lifecycleScope, this)
 
     }
 
