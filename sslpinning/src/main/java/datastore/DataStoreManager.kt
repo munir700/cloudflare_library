@@ -55,7 +55,7 @@ class DataStoreManager() {
         }
     }
 
-    fun getDatsStoreInfo(context: Context) = context.dataStore.data
+    fun getDataStoreInfo(context: Context) = context.dataStore.data
         .map { preferences ->
             DataStore(
                 preferences[SECURE_PASSWORD_PRE],

@@ -27,13 +27,13 @@ class DataOperation {
                 e.printStackTrace()
             }.collect { isForceFirebaseFetch ->
                 if (isForceFirebaseFetch == true) {
-                    setEncryptedData(coroutineScope, context)
+                    getEncryptedDataFirebase(coroutineScope, context)
                 } else {
-                    DataStoreManager().getDatsStoreInfo(context).catch { e ->
+                    DataStoreManager().getDataStoreInfo(context).catch { e ->
                         e.printStackTrace()
                     }.collect { dataStore ->
                         if (dataStore.rsaEncryptedData.isNullOrEmpty())
-                            setEncryptedData(coroutineScope, context)
+                            getEncryptedDataFirebase(coroutineScope, context)
                         else
                             buildEncryptedData(coroutineScope, dataStore)
                     }
@@ -71,7 +71,7 @@ class DataOperation {
     }
 
 
-    private fun setEncryptedData(coroutineScope: CoroutineScope, context: Context) {
+    private fun getEncryptedDataFirebase(coroutineScope: CoroutineScope, context: Context) {
         Log.w("setEncryptedData", "called")
 
         // Read from the database
@@ -79,14 +79,7 @@ class DataOperation {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
                 // This method is called once with the initial value and again
                 // whenever data at this location is updated.
-                coroutineScope.launch(Dispatchers.IO) {
-                    DataStoreManager().saveSecureEncodedInfo(
-                        context,
-                        (dataSnapshot.value as HashMap<String, String>)[DataStoreManager.PASS_WORD_KEY],
-                        (dataSnapshot.value as HashMap<String, String>)[DataStoreManager.RSA_ENCRYPTED_DATA],
-                        (dataSnapshot.value as HashMap<String, String>)[DataStoreManager.RSA_PRIVATE_KEY]
-                    )
-                }
+                putEncryptedDataDataStore(coroutineScope, context, dataSnapshot)
             }
 
             override fun onCancelled(error: DatabaseError) {
@@ -94,5 +87,20 @@ class DataOperation {
                 Log.w("FirebaseExecution", "Failed to read value.", error.toException())
             }
         })
+    }
+
+    private fun putEncryptedDataDataStore(
+        coroutineScope: CoroutineScope,
+        context: Context,
+        dataSnapshot: DataSnapshot
+    ) {
+        coroutineScope.launch(Dispatchers.IO) {
+            DataStoreManager().saveSecureEncodedInfo(
+                context,
+                (dataSnapshot.value as HashMap<String, String>)[DataStoreManager.PASS_WORD_KEY],
+                (dataSnapshot.value as HashMap<String, String>)[DataStoreManager.RSA_ENCRYPTED_DATA],
+                (dataSnapshot.value as HashMap<String, String>)[DataStoreManager.RSA_PRIVATE_KEY]
+            )
+        }
     }
 }
