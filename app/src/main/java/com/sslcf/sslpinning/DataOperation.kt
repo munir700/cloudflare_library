@@ -20,8 +20,22 @@ import yap.sslpinninglibrary.DATA
 import yap.sslpinninglibrary.ENCRYPTED_DATA
 import yap.utils.EncryptionUtils
 
+/***
+ * Perform data operations to encrypt data.
+ * Main responsibilities to interact with firebase to fetch encrypted data and save into DataStore
+ * On storing encrypted data into DataStore start process to encrypt data
+ * @author Munir Ahmad
+ */
 class DataOperation {
-
+    /***
+     * Decide if the data is not stored in the DataStore, retrieve it from Firebase first.
+     * After retrieving from the firebase, the data is then stored in the DataStore.
+     * DataStore is activated when values change in preferences.
+     * BuildEncryptedData () on callback call method
+     * So the main purpose of this method is to get data from Firebase and store it in DataStore.
+     * @param coroutineScope
+     * @param context
+     */
     fun getEncryptedData(coroutineScope: CoroutineScope, context: Context) {
         coroutineScope.launch(Dispatchers.Default) {
             DataStoreManager().getForceFetchFirebase(context).catch { e ->
@@ -43,6 +57,13 @@ class DataOperation {
         }
     }
 
+    /**
+     * Decide that all relevant data exists then create a JSONObject to insert the ENCRYPTED_DATA attribute required for the decryption process.
+     * Make encryption private using encryption utilities
+     * Call method to perform the actual encryption process
+     * @param coroutineScope
+     * @param dataStore
+     */
     private fun buildEncryptedData(coroutineScope: CoroutineScope, dataStore: DataStore) {
         if (dataStore.rsaEncryptedData != null && dataStore.rsaPrivateKey != null && dataStore.passwordKey != null) {
             var jsonEncryptedData = JSONObject()
@@ -75,6 +96,12 @@ class DataOperation {
         }
     }
 
+    /**
+     * Fetch data from Firebase
+     *
+     * @param coroutineScope
+     * @param context
+     */
 
     private fun getEncryptedDataFirebase(coroutineScope: CoroutineScope, context: Context) {
         Log.w("setEncryptedData", "called")
@@ -93,6 +120,14 @@ class DataOperation {
             }
         })
     }
+
+    /**
+     * Extract data from snapshot and store data in data store.
+     *
+     * @param coroutineScope
+     * @param context
+     * @param dataSnapshot
+     */
 
     private fun putEncryptedDataDataStore(
         coroutineScope: CoroutineScope,

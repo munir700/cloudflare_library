@@ -11,7 +11,23 @@ import yap.sslpinninglibrary.CLOUDFLARE_DECRYPTED
 import yap.sslpinninglibrary.DecryptCloudflareData
 import java.security.PrivateKey
 
+/***
+ *  Perform data decryption
+ *  Simple read decrypted file and private key
+ *  In response provide decrypted String
+ *  @author Munir Ahmad
+ */
 class DataDecryption {
+    /**
+     * Decrypt data by using symmetric and asymmetric techniques
+     * This method read decrypted data which is going decrypted and, private key which will used to decrypt the file/data
+     * @param coroutineScope
+     * @param passwordKey
+     * @param encryptedFile
+     * @param privateKey
+     * on Successful decryption get CLOUDFLARE_DECRYPTED from json object and call buildHttpClient()
+     * on failure print exception
+     */
     fun decryptAsymmetric(
         coroutineScope: CoroutineScope,
         passwordKey: String,
