@@ -42,13 +42,13 @@ class DataOperation {
                 e.printStackTrace()
             }.collect { isForceFirebaseFetch ->
                 if (isForceFirebaseFetch == true) {
-                    getEncryptedDataFirebase(coroutineScope, context)
+                    FirebaseHelper().getEncryptedDataFirebase(coroutineScope, context)
                 } else {
                     DataStoreManager().getDataStoreEncryptedInfo(context).catch { e ->
                         e.printStackTrace()
                     }.collect { dataStore ->
                         if (dataStore.rsaEncryptedData.isNullOrEmpty())
-                            getEncryptedDataFirebase(coroutineScope, context)
+                            FirebaseHelper().getEncryptedDataFirebase(coroutineScope, context)
                         else
                             buildEncryptedData(coroutineScope, dataStore)
                     }
@@ -97,31 +97,6 @@ class DataOperation {
     }
 
     /**
-     * Fetch data from Firebase
-     *
-     * @param coroutineScope
-     * @param context
-     */
-
-    private fun getEncryptedDataFirebase(coroutineScope: CoroutineScope, context: Context) {
-        Log.w("setEncryptedData", "called")
-
-        // Read from the database
-        Firebase.database.reference.addValueEventListener(object : ValueEventListener {
-            override fun onDataChange(dataSnapshot: DataSnapshot) {
-                // This method is called once with the initial value and again
-                // whenever data at this location is updated.
-                putEncryptedDataDataStore(coroutineScope, context, dataSnapshot)
-            }
-
-            override fun onCancelled(error: DatabaseError) {
-                // Failed to read value
-                Log.w("FirebaseExecution", "Failed to read value.", error.toException())
-            }
-        })
-    }
-
-    /**
      * Extract data from snapshot and store data in data store.
      *
      * @param coroutineScope
@@ -129,7 +104,7 @@ class DataOperation {
      * @param dataSnapshot
      */
 
-    private fun putEncryptedDataDataStore(
+    fun putEncryptedDataDataStore(
         coroutineScope: CoroutineScope,
         context: Context,
         dataSnapshot: DataSnapshot

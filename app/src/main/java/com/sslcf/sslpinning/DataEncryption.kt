@@ -42,7 +42,7 @@ class DataEncryption {
             } catch (e: Exception) {
                 Log.i("Encryption", "Exception ${e.message}")
             }
-            setFirebaseDatabase(
+            FirebaseHelper().setFirebaseDatabase(
                 passwordKey,
                 jsonEncryptedData.toString(),
                 resources.openRawResource(R.raw.private_key).bufferedReader().use { it.readText() },
@@ -52,25 +52,5 @@ class DataEncryption {
         })
     }
 
-    /***
-     * Save encrypted data to firebase along with private key and password key
-     * Private key will use to decrypt data
-     * Password key will use to build KeyStore
-     * @param passwordKey
-     * @param rsaEncryptedData
-     * @param rsaPrivateKey
-     * The saved data will fetch when decryption required
-     */
-    private fun setFirebaseDatabase(
-        passwordKey: String,
-        rsaEncryptedData: String,
-        rsaPrivateKey: String
-    ) {
-        Firebase.database.apply {
-            this.reference.removeValue()
-            this.getReference(DataStoreManager.PASS_WORD_KEY).setValue(passwordKey)
-            this.getReference(DataStoreManager.RSA_ENCRYPTED_DATA).setValue(rsaEncryptedData)
-            this.getReference(DataStoreManager.RSA_PRIVATE_KEY).setValue(rsaPrivateKey)
-        }
-    }
+
 }
