@@ -10,6 +10,6 @@ object NativeCloudflareData {
          System.loadLibrary("native-lib")
      }
 
-    external fun encryptedDataPart1(): String
-    external fun encryptedDataPart2(): String
+    external fun encryptedPart1(): String
+    external fun encryptedPart2(): String
 }
