@@ -2,10 +2,7 @@ package com.sslcf.sslpinning
 
 import android.content.res.Resources
 import android.util.Log
-import com.google.firebase.database.ktx.database
-import com.google.firebase.ktx.Firebase
 import com.sslcf.R
-import datastorelibrary.DataStoreManager
 import org.json.JSONObject
 import yap.sslpinninglibrary.DATA
 import yap.sslpinninglibrary.ENCRYPTED_DATA
@@ -30,8 +27,8 @@ class DataEncryption {
         resources: Resources,
         passwordKey: String
     ) {
-        val inputFileByteArray = resources.openRawResource(R.raw.dynamic).readBytes()
-        val isCertificate = resources.openRawResource(R.raw.ca_cert)
+        val inputFileByteArray = resources.openRawResource(R.raw.cf_cert).readBytes()
+        val isCertificate = resources.openRawResource(R.raw.encryption_ca_cert)
         EncryptCloudflareData.encryptFileData(inputFileByteArray, isCertificate, { encryptedData ->
             Log.i("Encryption", "SUCCESS $encryptedData")
             var jsonEncryptedData: JSONObject? = null
@@ -45,7 +42,7 @@ class DataEncryption {
             FirebaseHelper().setFirebaseDatabase(
                 passwordKey,
                 jsonEncryptedData.toString(),
-                resources.openRawResource(R.raw.private_key).bufferedReader().use { it.readText() },
+                resources.openRawResource(R.raw.decryption_private_key).bufferedReader().use { it.readText() },
             )
         }, { failureMessage ->
             Log.i("Encryption", "Failed $failureMessage")
