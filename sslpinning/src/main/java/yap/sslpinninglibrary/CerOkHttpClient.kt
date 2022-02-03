@@ -7,7 +7,21 @@ import java.security.SecureRandom
 import java.util.*
 import javax.net.ssl.*
 
+/**
+ * SSL/TLS pinning must have SSLSocketFactory in OkHttpClient.Builder.
+ * SSLSocketFactory started by loading client certificates to build KeyStore.
+ * Setup TrustManagerFactory and KeyManagerFactory to initiate SSLContext.
+ * When all items are started correctly, then bind SSLSocketFactory to OkHttpClient.Builder.
+ * @author Munir Ahmad
+ */
 object CerOkHttpClient {
+    /**
+     * Setup SSLSocketFactory for OkHttpClient.Builder
+     *
+     * @param builder
+     * @param decryptedFile
+     * @param passwordKey
+     */
     fun setupOkHttpClientBuilderSSLSocket(
         builder: OkHttpClient.Builder,
         decryptedFile: ByteArray,
