@@ -6,7 +6,21 @@ import java.io.IOException
 import java.security.GeneralSecurityException
 import java.security.PrivateKey
 
+/**
+ * Wrapper class on Decryption
+ * The basic purpose to interact with Encryption process by taking inputs from client and perform required
+ * operation according to need and return Decrypted data.
+ * @author Munir Ahmad
+ */
 object DecryptCloudflareData {
+    /**
+     * Decrypt data/file
+     * To decrypt file/data encrypted data and private key required for decryption
+     * @param fileDecryptedData
+     * @param privateKey
+     * @param success lambda
+     * @param failure lambda
+     */
 
     fun decryptFileData(
         fileDecryptedData: String,
