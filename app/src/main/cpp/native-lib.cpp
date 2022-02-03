@@ -5,6 +5,8 @@
 #include <jni.h>
 #include <string>
 
+//Define methods to store and return Strings values
+
 
 extern "C"
 JNIEXPORT jstring JNICALL
