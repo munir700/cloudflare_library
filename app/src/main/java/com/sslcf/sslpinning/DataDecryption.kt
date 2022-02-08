@@ -1,6 +1,5 @@
 package com.sslcf.sslpinning
 
-import android.util.Base64
 import android.util.Log
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -30,27 +29,23 @@ class DataDecryption {
      */
     fun decryptAsymmetric(
         coroutineScope: CoroutineScope,
-        passwordKey: String,
         encryptedFile: String,
-        privateKey: PrivateKey
+        privateKey: PrivateKey,
+        decryptedFile: (String) -> (Unit),
+        failure: (String) -> (Unit)
     ) {
         DecryptCloudflareData.decryptFileData(encryptedFile, privateKey, { decryptedData ->
             coroutineScope.launch(Dispatchers.IO) {
 
                 try {
                     val jsonDecryptedData = JSONObject(decryptedData)
-                    val jsonDecryptedDataStr: String =
-                        jsonDecryptedData.getString(CLOUDFLARE_DECRYPTED)
-                    YapHttpsBuilder().buildHttpClient(
-                        passwordKey,
-                        Base64.decode(jsonDecryptedDataStr, Base64.NO_WRAP)
-                    )
+                    decryptedFile.invoke(jsonDecryptedData.getString(CLOUDFLARE_DECRYPTED))
                 } catch (e: JSONException) {
                     Log.e("JSONException", "ex ${e.message}")
                 }
             }
         }, { failureMessage ->
-            Log.i("Decryption", "Failed $failureMessage")
+            failure.invoke("Failed $failureMessage")
         })
     }
 }
