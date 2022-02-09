@@ -70,7 +70,6 @@ class DataOperation {
      * Decide that all relevant data exists then create a JSONObject to insert the ENCRYPTED_DATA attribute required for the decryption process.
      * Make encryption private using encryption utilities
      * Call method to perform the actual encryption process
-     * @param coroutineScope
      * @param dataStore
      */
     fun buildEncryptedData(dataStore: DataStore): String? {

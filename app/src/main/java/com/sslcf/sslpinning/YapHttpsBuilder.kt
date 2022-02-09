@@ -11,22 +11,23 @@ import javax.net.ssl.HttpsURLConnection
 
 class YapHttpsBuilder {
 
-    private fun getHttpBuilder(
-        passwordKey: String,
-        decryptedFile: ByteArray
-    ): OkHttpClient.Builder {
-        val okHttpClientBuilder = OkHttpClient.Builder()
-        CerOkHttpClient().setupOkHttpClientBuilderSSLSocket(
-            okHttpClientBuilder,
-            decryptedFile,
-            passwordKey
-        )
-
-        return okHttpClientBuilder
-    }
 
     fun buildHttpClient(passwordKey: String, decryptedFile: ByteArray) {
-        val okHttpClientBuilder = getHttpBuilder(passwordKey, decryptedFile)
+        val okHttpClientBuilder = OkHttpClient.Builder()
+
+        CerOkHttpClient().setupSSLSocket(
+            decryptedFile,
+            passwordKey,
+            { sslSocketFactory, x509TrustManager ->
+                run {
+                    okHttpClientBuilder.sslSocketFactory(sslSocketFactory, x509TrustManager)
+                }
+            }, { failure ->
+                Log.e("failure", "$failure")
+                //TODO Developer will handle by revisit the Encryption/Decryption process
+                // 3 reason may be there 1. corrupted file, 2. wrong password, 3. Trust manager not available on current device
+            }
+        )
         val retrofit = Retrofit.Builder()
             .baseUrl("https://test-mtls.yap.com/")
             .client(okHttpClientBuilder.build())
