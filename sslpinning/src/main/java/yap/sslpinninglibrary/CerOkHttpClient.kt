@@ -14,7 +14,7 @@ import javax.net.ssl.*
  * When all items are started correctly, then bind SSLSocketFactory to OkHttpClient.Builder.
  * @author Munir Ahmad
  */
-object CerOkHttpClient {
+class CerOkHttpClient {
     /**
      * Setup SSLSocketFactory for OkHttpClient.Builder
      *

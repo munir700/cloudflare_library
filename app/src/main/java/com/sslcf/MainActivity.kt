@@ -6,6 +6,7 @@ import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import com.sslcf.sslpinning.DataDecryption
+import com.sslcf.sslpinning.DataEncryption
 import com.sslcf.sslpinning.DataOperation
 import com.sslcf.sslpinning.YapHttpsBuilder
 import datastorelibrary.DataStoreManager
@@ -34,29 +35,31 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun enableSSLPinning() {
-        DataOperation().getEncryptedData(lifecycleScope, this@MainActivity) { daraStore ->
+        DataOperation().getEncryptedData(lifecycleScope, this@MainActivity, { dataStore ->
             val encryptedData =
-                DataOperation().buildEncryptedData(dataStore = daraStore)
+                DataOperation().buildEncryptedData(dataStore = dataStore)
             if (encryptedData == null) {
                 Log.e(TAG, "Data encrypted retrieval failed")
                 return@getEncryptedData
             }
             val privateKey =
-                EncryptionUtils.loadDecryptionKey(daraStore.rsaPrivateKey!!.byteInputStream())
+                EncryptionUtils.loadDecryptionKey(dataStore.rsaPrivateKey!!.byteInputStream())
             DataDecryption().decryptAsymmetric(
                 lifecycleScope,
                 encryptedData,
                 privateKey,
                 { decryptedFile ->
                     YapHttpsBuilder().buildHttpClient(
-                        daraStore.passwordKey!!,
+                        dataStore.passwordKey!!,
                         Base64.decode(decryptedFile, Base64.NO_WRAP)
                     )
-                }, { failure ->
-                    Log.e(TAG, "Data encryption process $failure")
+                }, { decryptDataFailure ->
+                    Log.e(TAG, "Data encryption process $decryptDataFailure")
                 }
             )
-        }
+        }, { dataRetrievalFailure ->
+            Log.e(TAG, "Data retrieval process $dataRetrievalFailure")
+        })
     }
 
 }

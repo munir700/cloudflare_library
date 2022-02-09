@@ -12,7 +12,7 @@ import java.security.PrivateKey
  * operation according to need and return Decrypted data.
  * @author Munir Ahmad
  */
-object DecryptCloudflareData {
+class DecryptCloudflareData {
     /**
      * Decrypt data/file
      * To decrypt file/data encrypted data and private key required for decryption

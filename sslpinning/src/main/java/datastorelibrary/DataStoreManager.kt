@@ -1,6 +1,7 @@
 package datastorelibrary
 
 import android.content.Context
+import android.util.Base64
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
@@ -8,6 +9,7 @@ import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import kotlinx.coroutines.flow.map
+
 
 class DataStoreManager() {
 
@@ -58,9 +60,17 @@ class DataStoreManager() {
     fun getDataStoreEncryptedInfo(context: Context) = context.dataStore.data
         .map { preferences ->
             DataStore(
-                preferences[SECURE_PASSWORD_PRE],
-                preferences[RSA_ENCRYPTED_PRE],
-                preferences[RSA_PRIVATE_PRE]
+                preferences[SECURE_PASSWORD_PRE]?.let {
+                    String(Base64.decode(it, Base64.NO_WRAP))
+                },
+                preferences[RSA_ENCRYPTED_PRE]?.let {
+                    String(Base64.decode(it, Base64.NO_WRAP))
+                },
+                preferences[RSA_PRIVATE_PRE]?.let {
+                    String(
+                        Base64.decode(it, Base64.NO_WRAP)
+                    )
+                }
             )
         }
 }

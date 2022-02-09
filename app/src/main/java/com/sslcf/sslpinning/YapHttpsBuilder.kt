@@ -16,7 +16,7 @@ class YapHttpsBuilder {
         decryptedFile: ByteArray
     ): OkHttpClient.Builder {
         val okHttpClientBuilder = OkHttpClient.Builder()
-        CerOkHttpClient.setupOkHttpClientBuilderSSLSocket(
+        CerOkHttpClient().setupOkHttpClientBuilderSSLSocket(
             okHttpClientBuilder,
             decryptedFile,
             passwordKey

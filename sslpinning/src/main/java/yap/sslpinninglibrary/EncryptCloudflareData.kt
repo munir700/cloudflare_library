@@ -27,7 +27,7 @@ const val TOKENIZATION_AUTHENTICATE_VALUE = "tokenizationAuthenticationValue"
  * @author Munir Ahmad
  */
 
-object EncryptCloudflareData {
+class EncryptCloudflareData {
     /***
      * Encrypt Data/File
      * @param fileByteArray

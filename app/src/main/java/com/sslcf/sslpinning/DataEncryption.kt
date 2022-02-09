@@ -1,12 +1,14 @@
 package com.sslcf.sslpinning
 
 import android.content.res.Resources
+import android.util.Base64
 import android.util.Log
 import com.sslcf.R
 import org.json.JSONObject
 import yap.sslpinninglibrary.DATA
 import yap.sslpinninglibrary.ENCRYPTED_DATA
 import yap.sslpinninglibrary.EncryptCloudflareData
+import yap.sslpinninglibrary.OAEP_HASHING_ALGORITHM
 
 /***
  *  Perform data encryption
@@ -29,24 +31,39 @@ class DataEncryption {
     ) {
         val inputFileByteArray = resources.openRawResource(R.raw.cf_cert).readBytes()
         val isCertificate = resources.openRawResource(R.raw.encryption_ca_cert)
-        EncryptCloudflareData.encryptFileData(inputFileByteArray, isCertificate, { encryptedData ->
-            Log.i("Encryption", "SUCCESS $encryptedData")
-            var jsonEncryptedData: JSONObject? = null
-            try {
-                jsonEncryptedData = JSONObject(encryptedData)
-                jsonEncryptedData.getJSONObject(DATA).remove(ENCRYPTED_DATA)
 
-            } catch (e: Exception) {
-                Log.i("Encryption", "Exception ${e.message}")
-            }
-            FirebaseHelper().setFirebaseDatabase(
-                passwordKey,
-                jsonEncryptedData.toString(),
-                resources.openRawResource(R.raw.decryption_private_key).bufferedReader().use { it.readText() },
-            )
-        }, { failureMessage ->
-            Log.i("Encryption", "Failed $failureMessage")
-        })
+        EncryptCloudflareData().encryptFileData(
+            inputFileByteArray,
+            isCertificate,
+            { encryptedData ->
+                Log.i("Encryption", "SUCCESS $encryptedData")
+                var jsonEncryptedData: JSONObject? = null
+                try {
+                    jsonEncryptedData = JSONObject(encryptedData)
+                    jsonEncryptedData.getJSONObject(DATA).remove(ENCRYPTED_DATA)
+                    jsonEncryptedData.getJSONObject(DATA).remove(OAEP_HASHING_ALGORITHM)
+
+                } catch (e: Exception) {
+                    Log.i("Encryption", "Exception ${e.message}")
+                }
+
+                FirebaseHelper().setFirebaseDatabase(
+                    Base64.encodeToString(passwordKey.toByteArray(), Base64.NO_WRAP),
+                    Base64.encodeToString(
+                        jsonEncryptedData.toString().toByteArray(),
+                        Base64.NO_WRAP
+                    ),
+
+                    Base64.encodeToString(
+                        (resources.openRawResource(R.raw.decryption_private_key).readBytes()),
+                        Base64.NO_WRAP
+                    )
+
+                )
+            },
+            { failureMessage ->
+                Log.i("Encryption", "Failed $failureMessage")
+            })
     }
 
 

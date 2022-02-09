@@ -44,8 +44,11 @@ class FirebaseHelper {
      * @param context
      */
 
-    fun getEncryptedDataFirebase(coroutineScope: CoroutineScope, context: Context) {
-        Log.w("setEncryptedData", "called")
+    fun getEncryptedDataFirebase(
+        coroutineScope: CoroutineScope,
+        context: Context,
+        failure: (String) -> (Unit)
+    ) {
 
         // Read from the database
         Firebase.database.reference.addValueEventListener(object : ValueEventListener {
@@ -57,7 +60,7 @@ class FirebaseHelper {
 
             override fun onCancelled(error: DatabaseError) {
                 // Failed to read value
-                Log.w("FirebaseExecution", "Failed to read value.", error.toException())
+                failure.invoke("FirebaseExecution, Failed to read value. ${error.toException()}")
             }
         })
     }

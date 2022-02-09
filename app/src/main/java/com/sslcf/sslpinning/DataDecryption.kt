@@ -34,14 +34,14 @@ class DataDecryption {
         decryptedFile: (String) -> (Unit),
         failure: (String) -> (Unit)
     ) {
-        DecryptCloudflareData.decryptFileData(encryptedFile, privateKey, { decryptedData ->
+        DecryptCloudflareData().decryptFileData(encryptedFile, privateKey, { decryptedData ->
             coroutineScope.launch(Dispatchers.IO) {
 
                 try {
                     val jsonDecryptedData = JSONObject(decryptedData)
                     decryptedFile.invoke(jsonDecryptedData.getString(CLOUDFLARE_DECRYPTED))
                 } catch (e: JSONException) {
-                    Log.e("JSONException", "ex ${e.message}")
+                    failure.invoke("Failed ${e.message}")
                 }
             }
         }, { failureMessage ->
