@@ -33,6 +33,8 @@ class DataOperation {
      * So the main purpose of this method is to get data from Firebase and store it in DataStore.
      * @param coroutineScope
      * @param context
+     * @param dataStoreSuccess lambda
+     * @param failure lambda
      */
     fun getEncryptedData(
         coroutineScope: CoroutineScope,

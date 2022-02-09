@@ -66,6 +66,13 @@ class CerOkHttpClient {
         }
     }
 
+    /**
+     * Return X509TrustManager for build SSL Socket factory
+     *
+     * @param trustManagerFactory
+     * @param failure lambda
+     * @return
+     */
     private fun getX509TrustManager(
         trustManagerFactory: TrustManagerFactory,
         failure: (String?) -> Unit

@@ -21,9 +21,10 @@ class DataDecryption {
      * Decrypt data by using symmetric and asymmetric techniques
      * This method read decrypted data which is going decrypted and, private key which will used to decrypt the file/data
      * @param coroutineScope
-     * @param passwordKey
      * @param encryptedFile
      * @param privateKey
+     * @param decryptedFile lambda
+     * @param failure lambda
      * on Successful decryption get CLOUDFLARE_DECRYPTED from json object and call buildHttpClient()
      * on failure print exception
      */
