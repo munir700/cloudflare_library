@@ -17,7 +17,7 @@ class DataStoreManager() {
         const val PASS_WORD_KEY = "pass_word_key"
         const val RSA_ENCRYPTED_DATA = "rsa_encrypted_data"
         const val RSA_PRIVATE_KEY = "rsa_private_key"
-        const val FORCE_FETCH_FIREBASE = "force_fetch_firebase"
+        private const val FORCE_FETCH_FIREBASE = "force_fetch_firebase"
 
 
         private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "EncodedData")
@@ -67,9 +67,7 @@ class DataStoreManager() {
                     String(Base64.decode(it, Base64.NO_WRAP))
                 },
                 preferences[RSA_PRIVATE_PRE]?.let {
-                    String(
-                        Base64.decode(it, Base64.NO_WRAP)
-                    )
+                    String(Base64.decode(it, Base64.NO_WRAP))
                 }
             )
         }

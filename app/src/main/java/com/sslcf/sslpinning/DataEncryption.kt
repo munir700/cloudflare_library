@@ -49,6 +49,7 @@ class DataEncryption {
 
                 FirebaseHelper().setFirebaseDatabase(
                     Base64.encodeToString(passwordKey.toByteArray(), Base64.NO_WRAP),
+                    
                     Base64.encodeToString(
                         jsonEncryptedData.toString().toByteArray(),
                         Base64.NO_WRAP
@@ -58,7 +59,6 @@ class DataEncryption {
                         (resources.openRawResource(R.raw.decryption_private_key).readBytes()),
                         Base64.NO_WRAP
                     )
-
                 )
             },
             { failureMessage ->
