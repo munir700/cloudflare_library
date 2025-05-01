@@ -1,7 +1,6 @@
 package com.sslcf.sslpinning
 
 import android.content.Context
-import android.util.Log
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.ValueEventListener
@@ -47,6 +46,7 @@ class FirebaseHelper {
     fun getEncryptedDataFirebase(
         coroutineScope: CoroutineScope,
         context: Context,
+        success: (Boolean) -> (Unit),
         failure: (String) -> (Unit)
     ) {
 
@@ -56,6 +56,7 @@ class FirebaseHelper {
                 // This method is called once with the initial value and again
                 // whenever data at this location is updated.
                 DataOperation().putEncryptedDataDataStore(coroutineScope, context, dataSnapshot)
+                success.invoke(true)
             }
 
             override fun onCancelled(error: DatabaseError) {
@@ -64,6 +65,4 @@ class FirebaseHelper {
             }
         })
     }
-
-
 }

@@ -5,14 +5,13 @@ import android.util.Base64
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
+import com.sslcf.mohre.MobileSSOHttpsBuilder
 import com.sslcf.sslpinning.DataDecryption
-import com.sslcf.sslpinning.DataEncryption
 import com.sslcf.sslpinning.DataOperation
-import com.sslcf.sslpinning.YapHttpsBuilder
 import datastorelibrary.DataStoreManager
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import yap.sslpinning.*
 import yap.utils.EncryptionUtils
 
 
@@ -26,11 +25,14 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
         lifecycleScope.launch(Dispatchers.IO) {
-            DataStoreManager().saveForceFirebaseFetch(this@MainActivity, false)
+            DataStoreManager().saveForceFirebaseFetch(this@MainActivity, true)
+
+            delay(2000)
+
+            enableSSLPinning()
         }
 
         //DataEncryption().encryptionAsymmetric(resources, passwordKey)
-        enableSSLPinning()
 
     }
 
@@ -43,13 +45,13 @@ class MainActivity : AppCompatActivity() {
                 return@getEncryptedData
             }
             val privateKey =
-                EncryptionUtils.loadDecryptionKey(dataStore.rsaPrivateKey!!.byteInputStream())
+                EncryptionUtils.loadDecryptionKey(dataStore.rsaPrivateKey?.byteInputStream())
             DataDecryption().decryptAsymmetric(
                 lifecycleScope,
                 encryptedData,
                 privateKey,
                 { decryptedFile ->
-                    YapHttpsBuilder().buildHttpClient(
+                    MobileSSOHttpsBuilder().buildHttpClient(
                         dataStore.passwordKey!!,
                         Base64.decode(decryptedFile, Base64.NO_WRAP)
                     )

@@ -40,22 +40,22 @@ class DataEncryption {
                 var jsonEncryptedData: JSONObject? = null
                 try {
                     jsonEncryptedData = JSONObject(encryptedData)
-                    jsonEncryptedData.getJSONObject(DATA).remove(ENCRYPTED_DATA)
+                    //jsonEncryptedData.getJSONObject(DATA).remove(ENCRYPTED_DATA)
                     jsonEncryptedData.getJSONObject(DATA).remove(OAEP_HASHING_ALGORITHM)
 
                 } catch (e: Exception) {
                     Log.i("Encryption", "Exception ${e.message}")
                 }
 
+                Log.i("Encryption", "Data ${jsonEncryptedData.toString()}")
+
                 FirebaseHelper().setFirebaseDatabase(
-                    Base64.encodeToString(passwordKey.toByteArray(), Base64.NO_WRAP),
-                    
-                    Base64.encodeToString(
+                    passwordKey = Base64.encodeToString(passwordKey.toByteArray(), Base64.NO_WRAP),
+                    rsaEncryptedData = Base64.encodeToString(
                         jsonEncryptedData.toString().toByteArray(),
                         Base64.NO_WRAP
                     ),
-
-                    Base64.encodeToString(
+                    rsaPrivateKey = Base64.encodeToString(
                         (resources.openRawResource(R.raw.decryption_private_key).readBytes()),
                         Base64.NO_WRAP
                     )
@@ -65,6 +65,4 @@ class DataEncryption {
                 Log.i("Encryption", "Failed $failureMessage")
             })
     }
-
-
 }

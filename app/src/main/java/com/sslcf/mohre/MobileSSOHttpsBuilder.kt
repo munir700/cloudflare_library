@@ -1,4 +1,4 @@
-package com.sslcf.sslpinning
+package com.sslcf.mohre
 
 import android.util.Log
 import com.sslcf.api.ApiService
@@ -9,7 +9,7 @@ import retrofit2.Retrofit
 import yap.sslpinninglibrary.CerOkHttpClient
 import javax.net.ssl.HttpsURLConnection
 
-class YapHttpsBuilder {
+class MobileSSOHttpsBuilder {
 
 
     fun buildHttpClient(passwordKey: String, decryptedFile: ByteArray) {
@@ -30,14 +30,17 @@ class YapHttpsBuilder {
         )
         try {
             val retrofit = Retrofit.Builder()
-                .baseUrl("https://test-mtls.yap.com/")
+                .baseUrl("https://mobile.mohre.gov.ae/mob_sso/server/")
                 .client(okHttpClientBuilder.build())
                 .build()
-
+            val request = LoginAccessRequest.getAuthenticateRequest(
+                username = "semployer",
+                password = "Mohre@12",
+            )
 
             val service: ApiService = retrofit.create(ApiService::class.java)
 
-            val loginUser: Call<ResponseBody> = service.loginUser()
+            val loginUser: Call<ResponseBody> = service.connectLogin(request.toFieldMap())
             val response = loginUser.execute()
 
             if (response.code() == HttpsURLConnection.HTTP_OK) {
