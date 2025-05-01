@@ -12,7 +12,7 @@ import javax.net.ssl.HttpsURLConnection
 class MobileSSOHttpsBuilder {
 
 
-    fun buildHttpClient(passwordKey: String, decryptedFile: ByteArray) {
+    fun buildHttpClient(passwordKey: String, decryptedFile: ByteArray, result: (String) -> Unit) {
         val okHttpClientBuilder = OkHttpClient.Builder()
 
         CerOkHttpClient().setupSSLSocket(
@@ -47,6 +47,7 @@ class MobileSSOHttpsBuilder {
                 Log.i("Response", "SUCCESS")
                 val responseByte = response.body()?.string()?.toByteArray()
                 responseByte?.let {
+                    result.invoke(String(it))
                     Log.i("Response", "Body ${String(it)}")
                 }
 

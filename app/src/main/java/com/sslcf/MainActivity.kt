@@ -3,6 +3,8 @@ package com.sslcf
 import android.os.Bundle
 import android.util.Base64
 import android.util.Log
+import android.widget.Button
+import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import com.sslcf.mohre.MobileSSOHttpsBuilder
@@ -12,6 +14,7 @@ import datastorelibrary.DataStoreManager
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import org.json.JSONObject
 import yap.utils.EncryptionUtils
 
 
@@ -29,11 +32,15 @@ class MainActivity : AppCompatActivity() {
 
             delay(2000)
 
-            enableSSLPinning()
+
         }
 
         //DataEncryption().encryptionAsymmetric(resources, passwordKey)
 
+        findViewById<Button>(R.id.login).setOnClickListener {
+            setText("Start Logging")
+            enableSSLPinning()
+        }
     }
 
     private fun enableSSLPinning() {
@@ -54,7 +61,9 @@ class MainActivity : AppCompatActivity() {
                     MobileSSOHttpsBuilder().buildHttpClient(
                         dataStore.passwordKey!!,
                         Base64.decode(decryptedFile, Base64.NO_WRAP)
-                    )
+                    ) { result ->
+                        setText(result = result)
+                    }
                 }, { decryptDataFailure ->
                     Log.e(TAG, "Data encryption process $decryptDataFailure")
                 }
@@ -64,4 +73,9 @@ class MainActivity : AppCompatActivity() {
         })
     }
 
+    private fun setText(result: String) {
+        this.runOnUiThread {
+            findViewById<TextView>(R.id.show_login_content).text = result
+        }
+    }
 }
