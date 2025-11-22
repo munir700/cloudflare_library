@@ -5,14 +5,14 @@ plugins {
 
 android {
     namespace 'yap.sslpinning'
-    compileSdk 36
+    compileSdk = 36
 
     defaultConfig {
-        minSdk 21
-        targetSdk 34
+        minSdk = 23
+        targetSdk = 36
 
-        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
-        consumerProguardFiles "consumer-rules.pro"
+        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        consumerProguardFiles = ["consumer-rules.pro"]
     }
 
     buildTypes {
@@ -21,34 +21,42 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
+
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
+        sourceCompatibility = JavaVersion.VERSION_11
+        targetCompatibility = JavaVersion.VERSION_11
     }
+
     kotlinOptions {
-        jvmTarget = '1.8'
+        jvmTarget = org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_11.target
     }
 }
 
 dependencies {
+    // AndroidX Core
+    implementation libs.androidx.core.ktx
+    implementation libs.androidx.appcompat
+    implementation libs.androidx.material
 
-    implementation 'androidx.core:core-ktx:1.7.0'
-    implementation 'androidx.appcompat:appcompat:1.4.1'
-    implementation 'com.google.android.material:material:1.5.0'
-    testImplementation 'junit:junit:4.+'
-    androidTestImplementation 'androidx.test.ext:junit:1.1.3'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
+    // Lifecycle
+    implementation libs.androidx.lifecycle.runtime.ktx
 
-    testImplementation 'io.mockk:mockk:1.10.0'
-    testImplementation 'androidx.arch.core:core-testing:2.1.0'
-    testImplementation 'androidx.test.ext:junit:1.1.3'
+    // DataStore
+    implementation libs.androidx.datastore.preferences
 
-    implementation("com.squareup.okhttp3:okhttp:4.9.3")
-    implementation 'com.squareup.retrofit2:retrofit:2.9.0'
+    // Networking
+    implementation libs.okhttp
+    implementation libs.retrofit
 
-    //Preferences DataStore (SharedPreferences like APIs)
-    implementation("androidx.datastore:datastore-preferences:1.0.0")
+    // JSON Processing
+    implementation libs.gson
+    implementation libs.json.path
 
-    implementation group: 'com.jayway.jsonpath', name: 'json-path', version: '2.4.0'
-    implementation 'com.google.code.gson:gson:2.8.9'
+    // Testing
+    testImplementation libs.junit
+    testImplementation libs.androidx.test.ext.junit
+    testImplementation libs.androidx.arch.core
+    testImplementation libs.mockk
+    androidTestImplementation libs.androidx.test.ext.junit
+    androidTestImplementation libs.androidx.test.espresso.core
 }
