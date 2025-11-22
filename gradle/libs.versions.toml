@@ -13,6 +13,7 @@ androidxTestEspresso = "3.7.0"
 androidxArchCore = "2.2.0"
 mockk = "1.14.6"
 firebaseBom = "33.7.0"
+firebaseDatabase = "20.3.1"
 okhttp = "5.3.2"
 retrofit = "3.0.0"
 gson = "2.13.2"
@@ -20,12 +21,6 @@ jsonPath = "2.10.0"
 googleServices = "4.4.4"
 
 [libraries]
-# Kotlin
-kotlin-gradle-plugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
-
-# Android Gradle Plugin
-android-gradle-plugin = { module = "com.android.tools.build:gradle", version.ref = "androidGradlePlugin" }
-
 # AndroidX
 androidx-core-ktx = { module = "androidx.core:core-ktx", version.ref = "coreKtx" }
 androidx-appcompat = { module = "androidx.appcompat:appcompat", version.ref = "appCompat" }
@@ -43,6 +38,7 @@ mockk = { module = "io.mockk:mockk", version.ref = "mockk" }
 
 # Firebase
 firebase-bom = { module = "com.google.firebase:firebase-bom", version.ref = "firebaseBom" }
+firebase-database-ktx = { module = "com.google.firebase:firebase-database-ktx", version.ref = "firebaseDatabase" }
 
 # Networking
 okhttp = { module = "com.squareup.okhttp3:okhttp", version.ref = "okhttp" }
@@ -52,12 +48,8 @@ retrofit = { module = "com.squareup.retrofit2:retrofit", version.ref = "retrofit
 gson = { module = "com.google.code.gson:gson", version.ref = "gson" }
 json-path = { module = "com.jayway.jsonpath:json-path", version.ref = "jsonPath" }
 
-# Google Services
-google-services = { module = "com.google.gms:google-services", version.ref = "googleServices" }
-
-[bundles]
-androidx-core = ["androidx-core-ktx", "androidx-appcompat", "androidx-material"]
-androidx-ui = ["androidx-constraintlayout", "androidx-lifecycle-runtime-ktx"]
-testing = ["junit", "androidx-test-ext-junit", "androidx-test-espresso-core"]
-networking = ["okhttp", "retrofit", "gson"]
-
+[plugins]
+androidApplication = { id = "com.android.application", version.ref = "androidGradlePlugin" }
+androidLibrary = { id = "com.android.library", version.ref = "androidGradlePlugin" }
+kotlinAndroid = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
+googleServices = { id = "com.google.gms.google-services", version.ref = "googleServices" }

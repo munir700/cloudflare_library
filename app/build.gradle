@@ -1,19 +1,22 @@
+import com.sslcf.AppConfig
+
 plugins {
-    id 'com.android.application'
-    id 'kotlin-android'
-    id 'com.google.gms.google-services'
+    alias(libs.plugins.androidApplication)
+    alias(libs.plugins.kotlinAndroid)
+    alias(libs.plugins.googleServices)
 }
 
+
 android {
-    namespace 'com.sslcf'
-    compileSdk = 36
+    namespace = AppConfig.NAMESPACE
+    compileSdk = AppConfig.COMPILE_SDK
 
     defaultConfig {
-        applicationId = "com.sslcf"
-        minSdk = 23
-        targetSdk = 36
-        versionCode = 1
-        versionName = "1.0"
+        applicationId = AppConfig.APPLICATION_ID
+        minSdk = AppConfig.MIN_SDK
+        targetSdk = AppConfig.TARGET_SDK
+        versionCode = AppConfig.VERSION_CODE
+        versionName = AppConfig.VERSION_NAME
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
@@ -29,12 +32,12 @@ android {
     }
 
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
+        sourceCompatibility = JavaVersion.toVersion(AppConfig.JAVA_VERSION_INT)
+        targetCompatibility = JavaVersion.toVersion(AppConfig.JAVA_VERSION_INT)
     }
 
     kotlinOptions {
-        jvmTarget = org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_11.target
+        jvmTarget = AppConfig.JAVA_VERSION
     }
 
     buildFeatures {
@@ -51,7 +54,7 @@ android {
         }
     }
 
-    ndkVersion '21.4.7075529'
+    ndkVersion = AppConfig.NDK_VERSION
 }
 
 dependencies {
@@ -72,8 +75,8 @@ dependencies {
     implementation project(':sslpinning')
 
     // Firebase
-    implementation platform('com.google.firebase:firebase-bom:33.7.0')
-    implementation 'com.google.firebase:firebase-database-ktx'
+    implementation platform(libs.firebase.bom)
+    implementation libs.firebase.database.ktx
 
     // JSON Processing
     implementation libs.gson

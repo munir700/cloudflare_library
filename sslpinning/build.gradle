@@ -1,15 +1,17 @@
+import com.sslcf.AppConfig
+
 plugins {
-    id 'com.android.library'
-    id 'kotlin-android'
+    alias(libs.plugins.androidLibrary)
+    alias(libs.plugins.kotlinAndroid)
 }
 
 android {
-    namespace 'yap.sslpinning'
-    compileSdk = 36
+    namespace = AppConfig.LIBRARY_NAMESPACE
+    compileSdk = AppConfig.COMPILE_SDK
 
     defaultConfig {
-        minSdk = 23
-        targetSdk = 36
+        minSdk = AppConfig.MIN_SDK
+        targetSdk = AppConfig.TARGET_SDK
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles = ["consumer-rules.pro"]
@@ -23,12 +25,12 @@ android {
     }
 
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
+        sourceCompatibility = JavaVersion.toVersion(AppConfig.JAVA_VERSION_INT)
+        targetCompatibility = JavaVersion.toVersion(AppConfig.JAVA_VERSION_INT)
     }
 
     kotlinOptions {
-        jvmTarget = org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_11.target
+        jvmTarget = AppConfig.JAVA_VERSION
     }
 }
 

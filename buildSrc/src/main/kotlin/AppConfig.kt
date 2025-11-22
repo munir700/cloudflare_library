@@ -12,9 +12,9 @@ object AppConfig {
     const val VERSION_NAME = "1.0"
     const val NAMESPACE = "com.sslcf"
     const val APPLICATION_ID = "com.sslcf"
+    const val LIBRARY_NAMESPACE = "yap.sslpinning"
 
     // Java Versions
     const val JAVA_VERSION = "11"
+    const val JAVA_VERSION_INT = 11
 }
-
-
