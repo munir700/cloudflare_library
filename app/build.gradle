@@ -35,6 +35,10 @@ android {
         jvmTarget = '1.8'
     }
 
+    buildFeatures {
+        buildConfig = true
+    }
+
     externalNativeBuild {
         cmake {
             path "CMakeLists.txt"
